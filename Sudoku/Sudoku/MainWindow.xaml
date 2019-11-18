@@ -5,26 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sudoku"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=local:DisplayedGrids}"
+        d:DataContext="{d:DesignInstance Type=local:SudokuVM}"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Grid.Resources>
             <local:ReverseBooleanConverter x:Key="ReverseBooleanConverter"/>
+            <local:CellValueConverter x:Key="CellValueConverter"/>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" Background="GhostWhite" BorderBrush="Black" BorderThickness="3">
-            <ItemsControl ItemsSource="{Binding Path=MainGrid.SubGrids}">
+        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="3">
+            <ItemsControl ItemsSource="{Binding Path=SubGrids}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="GhostWhite" BorderBrush="Gray" BorderThickness="2">
+                        <Border BorderBrush="Gray" BorderThickness="2">
                             <ItemsControl ItemsSource="{Binding Path=Cells}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding Value}" IsEnabled="{Binding Path=IsValidated, Converter={StaticResource ReverseBooleanConverter}}"  Width="30" Height="30" Margin="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                        <Button Content="{Binding Value, Converter={StaticResource CellValueConverter}}" Command="{Binding CellClickCmd}" IsEnabled="{Binding Path=IsValidated, Converter={StaticResource ReverseBooleanConverter}}"  Width="30" Height="30" Margin="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                                 <ItemsControl.ItemsPanel>
