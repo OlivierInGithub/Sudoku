@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using Newtonsoft.Json;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Windows.Input;
 
 namespace Sudoku
@@ -8,6 +11,10 @@ namespace Sudoku
         private FullGrid _mainGrid { get; set; }
         public BindingList<SubGridVM> SubGrids { get; set; }
         public ICommand ValidateCellsCmd { get; set; }
+        public ICommand SaveCmd { get; set; }
+        public ICommand LoadCmd { get; set; }
+
+        private const string FilePath = "c:\\Temp\\Sudoku.json";
 
         public SudokuVM()
         {
@@ -18,6 +25,8 @@ namespace Sudoku
                 SubGrids.Add(new SubGridVM(subGrid));
             }
             ValidateCellsCmd = new RelayCommand<object>((o) => ValidateCells());
+            SaveCmd = new RelayCommand<object>((o) => SaveCells());
+            LoadCmd = new RelayCommand<object>((o) => LoadCells());
         }
 
         private void ValidateCells()
@@ -29,6 +38,37 @@ namespace Sudoku
                     if (cell.Value > 0)
                         cell.IsValidated = true;
                 }
+            }
+        }
+
+        private void SaveCells()
+        {
+            var cellValues = _mainGrid.Cells.Select((cell) => cell.Value).ToArray();
+            using (StreamWriter file = File.CreateText(FilePath))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, cellValues);
+            }
+        }
+
+        private void LoadCells()
+        {
+            var cellValues = JsonConvert.DeserializeObject<short[]>(File.ReadAllText(FilePath));
+
+            int index = 0;
+            foreach (Cell cell in _mainGrid.Cells)
+            {
+                cell.Value = cellValues[index];
+                index++;
+            }
+            RefreshAll();
+        }
+
+        private void RefreshAll()
+        {
+            foreach (SubGridVM subGrid in SubGrids)
+            {
+                subGrid.Refresh();
             }
         }
     }
@@ -45,6 +85,14 @@ namespace Sudoku
             foreach (Cell cell in _subGrid.Cells)
             {
                 Cells.Add(new CellVM(cell));
+            }
+        }
+
+        public void Refresh()
+        {
+            foreach (CellVM cell in Cells)
+            {
+                cell.Refresh();
             }
         }
     }
@@ -92,6 +140,11 @@ namespace Sudoku
         {
             _cell = cell;
             CellClickCmd = new RelayCommand<object>((o) => CellClick());
+        }
+
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(Value));
         }
 
         private void CellClick()

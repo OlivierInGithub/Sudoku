@@ -64,17 +64,17 @@ namespace Sudoku
 
     public class FullGrid
     {
-        public BindingList<Cell> Cells { get; set; }
-        public BindingList<SubGrid> SubGrids { get; set; }
+        public List<Cell> Cells { get; set; }
+        public List<SubGrid> SubGrids { get; set; }
         private List<Row> _rows;
         private List<Column> _columns;
 
         public FullGrid()
         {
-            Cells = new BindingList<Cell>();
+            Cells = new List<Cell>();
             _rows = new List<Row>(9);
             _columns = new List<Column>(9);
-            SubGrids = new BindingList<SubGrid>();
+            SubGrids = new List<SubGrid>();
             Enumerable.Range(1, 9).ToList().ForEach((i)=>_rows.Add(new Row()));
             Enumerable.Range(1, 9).ToList().ForEach((i) => _columns.Add(new Column()));
             Enumerable.Range(1, 9).ToList().ForEach((i) => SubGrids.Add(new SubGrid()));

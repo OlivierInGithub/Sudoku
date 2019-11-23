@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Sudoku"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:SudokuVM}"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Sudoku" Height="350" Width="525">
     <Grid>
         <Grid.Resources>
             <local:ReverseBooleanConverter x:Key="ReverseBooleanConverter"/>
@@ -44,8 +44,15 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Border>
-        <StackPanel Grid.Column="2" Width="100">
-            <Button Content="Validate Cells" Height="20" Command="{Binding ValidateCellsCmd}" Margin="10"/>
+        <StackPanel Grid.Column="2" Width="100" Margin="10">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="2"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Validate Cells" Height="20" Command="{Binding ValidateCellsCmd}"/>
+            <Button Content="Save" Height="20" Command="{Binding SaveCmd}"/>
+            <Button Content="Load" Height="20" Command="{Binding LoadCmd}"/>
         </StackPanel>
     </Grid>
 </Window>
