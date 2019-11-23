@@ -7,11 +7,6 @@ using System.Windows.Controls;
 
 namespace Sudoku
 {
-    public class SelectedNumber
-    {
-        public short Value { get; set; }
-    }
-
     public class SudokuVM : INotifyPropertyChanged
     {
         private FullGrid _mainGrid { get; set; }
@@ -102,85 +97,8 @@ namespace Sudoku
         }
     }
 
-    public class SubGridVM
+    public class SelectedNumber
     {
-        private SubGrid _subGrid;
-        public BindingList<CellVM> Cells { get; set; }
-
-        public SubGridVM(SubGrid subGrid, SelectedNumber selectedNumber)
-        {
-            _subGrid = subGrid;
-            Cells = new BindingList<CellVM>();
-            foreach (Cell cell in _subGrid.Cells)
-            {
-                Cells.Add(new CellVM(cell, selectedNumber));
-            }
-        }
-
-        public void Refresh()
-        {
-            foreach (CellVM cell in Cells)
-            {
-                cell.Refresh();
-            }
-        }
-    }
-
-    public class CellVM: INotifyPropertyChanged
-    {
-        private Cell _cell;
-        private SelectedNumber _selectedNumber;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        public short Value
-        {
-            get
-            {
-                return _cell.Value;
-            }
-            set
-            {
-                _cell.Value = value;
-                OnPropertyChanged(nameof(Value));
-            }
-        }
-
-        public bool IsValidated
-        {
-            get
-            {
-                return _cell.IsValidated;
-            }
-            set
-            {
-                _cell.IsValidated = true;
-                OnPropertyChanged(nameof(IsValidated));
-            }
-        }
-
-        public ICommand CellClickCmd { get; set; }
-
-        public CellVM(Cell cell, SelectedNumber selectedNumber)
-        {
-            _cell = cell;
-            _selectedNumber = selectedNumber;
-            CellClickCmd = new RelayCommand<object>((o) => CellClick());
-        }
-
-        public void Refresh()
-        {
-            OnPropertyChanged(nameof(Value));
-        }
-
-        private void CellClick()
-        {
-            Value = _selectedNumber.Value;
-        }
+        public short Value { get; set; }
     }
 }

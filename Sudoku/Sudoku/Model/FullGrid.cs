@@ -1,67 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Sudoku
 {
-    public class Cell : INotifyPropertyChanged
-    {
-        public Int16 Value { get; set; }
-
-        private bool _IsValidated;
-        public bool IsValidated {
-            get { return _IsValidated; }
-            set
-            {
-                _IsValidated = value;
-                OnPropertyChanged(nameof(IsValidated));
-            }
-}
-        public Cell()
-        {
-            Value = 0;
-            IsValidated = false;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-    }
-
-    public class Row
-    {
-        public List<Cell> Cells;
-
-        public Row()
-        {
-            Cells = new List<Cell>();
-        }
-    }
-
-    public class Column
-    {
-        public List<Cell> Cells;
-
-        public Column()
-        {
-            Cells = new List<Cell>();
-        }
-    }
-
-    public class SubGrid
-    {
-        public BindingList<Cell> Cells { get; set; }
-
-        public SubGrid()
-        {
-            Cells = new BindingList<Cell>();
-        }
-    }
-
     public class FullGrid
     {
         public List<Cell> Cells { get; set; }
@@ -98,8 +39,6 @@ namespace Sudoku
                     SubGrids[subGridId].Cells.Add(_rows[rowId].Cells[colId]);
                 }
             }
-
         }
-
     }
 }

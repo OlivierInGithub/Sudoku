@@ -57,11 +57,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CellValueConverter.cs" />
-    <Compile Include="RelayCommand.cs" />
-    <Compile Include="ReverseBooleanConverter.cs" />
-    <Compile Include="SudokuVM.cs" />
-    <Page Include="MainWindow.xaml">
+    <Compile Include="Converters\CellValueConverter.cs" />
+    <Compile Include="Model\Cell.cs" />
+    <Compile Include="Model\Column.cs" />
+    <Compile Include="Model\Row.cs" />
+    <Compile Include="Model\SubGrid.cs" />
+    <Compile Include="ViewModel\CellVM.cs" />
+    <Compile Include="Utils\RelayCommand.cs" />
+    <Compile Include="Converters\ReverseBooleanConverter.cs" />
+    <Compile Include="ViewModel\SubGridVM.cs" />
+    <Compile Include="ViewModel\SudokuVM.cs" />
+    <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -69,8 +75,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FullGrid.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Model\FullGrid.cs" />
+    <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -102,5 +108,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
