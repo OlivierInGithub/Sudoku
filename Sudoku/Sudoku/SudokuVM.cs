@@ -3,30 +3,46 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace Sudoku
 {
-    public class SudokuVM
+    public class SelectedNumber
+    {
+        public short Value { get; set; }
+    }
+
+    public class SudokuVM : INotifyPropertyChanged
     {
         private FullGrid _mainGrid { get; set; }
+        private const string FilePath = "c:\\Temp\\Sudoku.json";
+        private SelectedNumber _selectedNumber;
+
+
         public BindingList<SubGridVM> SubGrids { get; set; }
         public ICommand ValidateCellsCmd { get; set; }
         public ICommand SaveCmd { get; set; }
         public ICommand LoadCmd { get; set; }
-
-        private const string FilePath = "c:\\Temp\\Sudoku.json";
+        public ICommand NumberButtonCmd { get; set; }
+        public string SelectedNumberLabel
+        {
+            get { return $"Selected number: {_selectedNumber.Value}"; }
+        }
+        
 
         public SudokuVM()
         {
             _mainGrid = new FullGrid();
+            _selectedNumber = new SelectedNumber { Value = 1 };
             SubGrids = new BindingList<SubGridVM>();
             foreach (SubGrid subGrid in _mainGrid.SubGrids)
             {
-                SubGrids.Add(new SubGridVM(subGrid));
+                SubGrids.Add(new SubGridVM(subGrid, _selectedNumber));
             }
             ValidateCellsCmd = new RelayCommand<object>((o) => ValidateCells());
             SaveCmd = new RelayCommand<object>((o) => SaveCells());
             LoadCmd = new RelayCommand<object>((o) => LoadCells());
+            NumberButtonCmd = new RelayCommand<Button>((button) => ApplyNumberButton(button));
         }
 
         private void ValidateCells()
@@ -71,6 +87,19 @@ namespace Sudoku
                 subGrid.Refresh();
             }
         }
+
+        private void ApplyNumberButton(Button button)
+        {
+            _selectedNumber.Value = short.Parse(button.Content.ToString());
+            OnPropertyChanged(nameof(SelectedNumberLabel));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     public class SubGridVM
@@ -78,13 +107,13 @@ namespace Sudoku
         private SubGrid _subGrid;
         public BindingList<CellVM> Cells { get; set; }
 
-        public SubGridVM(SubGrid subGrid)
+        public SubGridVM(SubGrid subGrid, SelectedNumber selectedNumber)
         {
             _subGrid = subGrid;
             Cells = new BindingList<CellVM>();
             foreach (Cell cell in _subGrid.Cells)
             {
-                Cells.Add(new CellVM(cell));
+                Cells.Add(new CellVM(cell, selectedNumber));
             }
         }
 
@@ -100,6 +129,7 @@ namespace Sudoku
     public class CellVM: INotifyPropertyChanged
     {
         private Cell _cell;
+        private SelectedNumber _selectedNumber;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -136,9 +166,10 @@ namespace Sudoku
 
         public ICommand CellClickCmd { get; set; }
 
-        public CellVM(Cell cell)
+        public CellVM(Cell cell, SelectedNumber selectedNumber)
         {
             _cell = cell;
+            _selectedNumber = selectedNumber;
             CellClickCmd = new RelayCommand<object>((o) => CellClick());
         }
 
@@ -149,10 +180,7 @@ namespace Sudoku
 
         private void CellClick()
         {
-            var newValue = Value + 1;
-            if (newValue > 9)
-                newValue = 0;
-            Value = (short)newValue;
+            Value = _selectedNumber.Value;
         }
     }
 }

@@ -44,15 +44,41 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Border>
-        <StackPanel Grid.Column="2" Width="100" Margin="10">
+        <StackPanel Grid.Column="2" Width="140" Margin="10">
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Margin" Value="2"/>
+                </Style>
+                <Style x:Key="NumberButton" TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="1"/>
+                    <Setter Property="Width" Value="20"/>
+                    <Setter Property="Height" Value="20"/>
+                    <Setter Property="Command" Value="{Binding NumberButtonCmd}"/>
+                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}}"/>
                 </Style>
             </StackPanel.Resources>
             <Button Content="Validate Cells" Height="20" Command="{Binding ValidateCellsCmd}"/>
             <Button Content="Save" Height="20" Command="{Binding SaveCmd}"/>
             <Button Content="Load" Height="20" Command="{Binding LoadCmd}"/>
+            <GroupBox Header="{Binding SelectedNumberLabel}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="1" Style="{StaticResource NumberButton}"/>
+                        <Button Content="2" Style="{StaticResource NumberButton}"/>
+                        <Button Content="3" Style="{StaticResource NumberButton}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="4" Style="{StaticResource NumberButton}"/>
+                        <Button Content="5" Style="{StaticResource NumberButton}"/>
+                        <Button Content="6" Style="{StaticResource NumberButton}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="7" Style="{StaticResource NumberButton}"/>
+                        <Button Content="8" Style="{StaticResource NumberButton}"/>
+                        <Button Content="9" Style="{StaticResource NumberButton}"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
     </Grid>
 </Window>
