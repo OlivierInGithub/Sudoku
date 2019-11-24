@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\CellValueConverter.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Model\Cell.cs" />
     <Compile Include="Model\Column.cs" />
     <Compile Include="Model\Row.cs" />

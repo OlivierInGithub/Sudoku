@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace Sudoku
 {
@@ -12,32 +13,88 @@ namespace Sudoku
         private FullGrid _mainGrid { get; set; }
         private const string FilePath = "c:\\Temp\\Sudoku.json";
         private SelectedNumber _selectedNumber;
+        private List<SubCellsVM> _rows;
+        private List<SubCellsVM> _columns;
 
 
         public BindingList<SubGridVM> SubGrids { get; set; }
+
         public ICommand ValidateCellsCmd { get; set; }
         public ICommand SaveCmd { get; set; }
         public ICommand LoadCmd { get; set; }
         public ICommand NumberButtonCmd { get; set; }
+        public ICommand HideCellsCmd { get; set; }
+        public ICommand ShowCellsCmd { get; set; }
         public string SelectedNumberLabel
         {
             get { return $"Selected number: {_selectedNumber.Value}"; }
         }
+
+        bool _isHidingCells;
+        public bool IsHindingCells
+        {
+            get { return _isHidingCells; }
+            set
+            {
+                _isHidingCells = value;
+                OnPropertyChanged((nameof(IsHindingCells)));
+            }
+        }
+
+        public string HideCellsLabel
+        {
+            get
+            {
+                return $"Hide cells not having {_selectedNumber.Value}";
+            }
+        }
+
         
 
         public SudokuVM()
         {
             _mainGrid = new FullGrid();
             _selectedNumber = new SelectedNumber { Value = 1 };
+            _rows = new List<SubCellsVM>(9);
+            _columns = new List<SubCellsVM>(9);
             SubGrids = new BindingList<SubGridVM>();
-            foreach (SubGrid subGrid in _mainGrid.SubGrids)
-            {
-                SubGrids.Add(new SubGridVM(subGrid, _selectedNumber));
-            }
+
+            InitCells();
+            
             ValidateCellsCmd = new RelayCommand<object>((o) => ValidateCells());
             SaveCmd = new RelayCommand<object>((o) => SaveCells());
             LoadCmd = new RelayCommand<object>((o) => LoadCells());
             NumberButtonCmd = new RelayCommand<Button>((button) => ApplyNumberButton(button));
+            HideCellsCmd = new RelayCommand<object>((o) => HideOrUnhideCells());
+            ShowCellsCmd = new RelayCommand<object>((o) => ShowCells());
+        }
+
+        private void InitCells()
+        {
+            Enumerable.Range(1, 9).ToList().ForEach((i) => _rows.Add(new SubCellsVM()));
+            Enumerable.Range(1, 9).ToList().ForEach((i) => _columns.Add(new SubCellsVM()));
+
+            foreach (SubGrid subGrid in _mainGrid.SubGrids)
+            {
+                SubGrids.Add(new SubGridVM(subGrid, _selectedNumber));
+            }
+
+            for (int rowId=0; rowId < 9; rowId++)
+            {
+                var subGridOffset = 3 * (rowId / 3);
+                var rowOffset = 3 * (rowId % 3);
+                _rows[rowId].Cells.AddRange(SubGrids[subGridOffset].Cells.Skip(rowOffset).Take(3));
+                _rows[rowId].Cells.AddRange(SubGrids[subGridOffset + 1].Cells.Skip(rowOffset).Take(3));
+                _rows[rowId].Cells.AddRange(SubGrids[subGridOffset + 2].Cells.Skip(rowOffset).Take(3));
+            }
+            
+            for (int colId=0; colId < 9; colId++)
+            {
+                for (int rowId = 0; rowId < 9; rowId++)
+                {
+                    _columns[colId].Cells.Add(_rows[rowId].Cells[colId]);
+                }
+            }
         }
 
         private void ValidateCells()
@@ -87,6 +144,42 @@ namespace Sudoku
         {
             _selectedNumber.Value = short.Parse(button.Content.ToString());
             OnPropertyChanged(nameof(SelectedNumberLabel));
+            OnPropertyChanged((nameof(HideCellsLabel)));
+        }
+
+        private void HideOrUnhideCells()
+        {
+            ShowCells();
+            HideCellsAccordingToNumber(_selectedNumber.Value);
+        }
+
+        private void HideCellsAccordingToNumber(short number)
+        {
+            foreach (SubGridVM subGrid in SubGrids)
+            {
+                subGrid.HideCellsAccordingToNumber(number);
+            }
+            foreach (SubCellsVM row in _rows)
+            {
+                row.HideCellsAccordingToNumber(number);
+            }
+            foreach (SubCellsVM column in _columns)
+            {
+                column.HideCellsAccordingToNumber(number);
+            }
+            IsHindingCells = true;
+        }
+
+        private void ShowCells()
+        {
+            foreach (SubGridVM subGrid in SubGrids)
+            {
+                foreach (CellVM cell in subGrid.Cells)
+                {
+                    cell.ToHide = false;
+                }
+            }
+            IsHindingCells = false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

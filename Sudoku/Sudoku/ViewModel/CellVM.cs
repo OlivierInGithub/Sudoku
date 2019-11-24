@@ -41,6 +41,12 @@ namespace Sudoku
             }
         }
 
+        private bool _toHide;
+        public bool ToHide {
+            get { return _toHide; }
+            set { _toHide = value; OnPropertyChanged((nameof(ToHide))); }
+        }
+
         public ICommand CellClickCmd { get; set; }
 
         public CellVM(Cell cell, SelectedNumber selectedNumber)

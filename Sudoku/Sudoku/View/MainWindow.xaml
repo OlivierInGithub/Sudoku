@@ -11,6 +11,7 @@
         <Grid.Resources>
             <local:ReverseBooleanConverter x:Key="ReverseBooleanConverter"/>
             <local:CellValueConverter x:Key="CellValueConverter"/>
+            <local:ReverseVisibilityConverter x:Key="ReverseVisibilityConverter"/>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -25,7 +26,13 @@
                             <ItemsControl ItemsSource="{Binding Path=Cells}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Content="{Binding Value, Converter={StaticResource CellValueConverter}}" Command="{Binding CellClickCmd}" IsEnabled="{Binding Path=IsValidated, Converter={StaticResource ReverseBooleanConverter}}"  Width="30" Height="30" Margin="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                        <Button Content="{Binding Value, Converter={StaticResource CellValueConverter}}" 
+                                                Command="{Binding CellClickCmd}" 
+                                                IsEnabled="{Binding Path=IsValidated, Converter={StaticResource ReverseBooleanConverter}}"
+                                                Visibility="{Binding Path=ToHide, Converter={StaticResource ReverseVisibilityConverter}}"
+                                                Width="30" Height="30" Margin="1" 
+                                                HorizontalContentAlignment="Center" 
+                                                VerticalContentAlignment="Center"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                                 <ItemsControl.ItemsPanel>
@@ -48,6 +55,7 @@
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Margin" Value="2"/>
+                    <Setter Property="Height" Value="20"/>
                 </Style>
                 <Style x:Key="NumberButton" TargetType="{x:Type Button}">
                     <Setter Property="Margin" Value="1"/>
@@ -57,9 +65,9 @@
                     <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}}"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Content="Validate Cells" Height="20" Command="{Binding ValidateCellsCmd}"/>
-            <Button Content="Save" Height="20" Command="{Binding SaveCmd}"/>
-            <Button Content="Load" Height="20" Command="{Binding LoadCmd}"/>
+            <Button Content="Validate Cells" Command="{Binding ValidateCellsCmd}"/>
+            <Button Content="Save" Command="{Binding SaveCmd}"/>
+            <Button Content="Load" Command="{Binding LoadCmd}"/>
             <GroupBox Header="{Binding SelectedNumberLabel}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -79,6 +87,8 @@
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
+            <Button Content="{Binding HideCellsLabel}" Command="{Binding HideCellsCmd}"/>
+            <Button Content="Show all cells" Command="{Binding ShowCellsCmd}"/>
         </StackPanel>
     </Grid>
 </Window>
