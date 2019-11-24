@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace Sudoku
 {
@@ -23,8 +24,11 @@ namespace Sudoku
         public ICommand SaveCmd { get; set; }
         public ICommand LoadCmd { get; set; }
         public ICommand NumberButtonCmd { get; set; }
+        public ICommand ResetSelectedNumberCmd { get; set; }
         public ICommand HideCellsCmd { get; set; }
         public ICommand ShowCellsCmd { get; set; }
+        public ICommand TrySolveOneCellCmd { get; set; }
+
         public string SelectedNumberLabel
         {
             get { return $"Selected number: {_selectedNumber.Value}"; }
@@ -49,8 +53,6 @@ namespace Sudoku
             }
         }
 
-        
-
         public SudokuVM()
         {
             _mainGrid = new FullGrid();
@@ -60,13 +62,7 @@ namespace Sudoku
             SubGrids = new BindingList<SubGridVM>();
 
             InitCells();
-            
-            ValidateCellsCmd = new RelayCommand<object>((o) => ValidateCells());
-            SaveCmd = new RelayCommand<object>((o) => SaveCells());
-            LoadCmd = new RelayCommand<object>((o) => LoadCells());
-            NumberButtonCmd = new RelayCommand<Button>((button) => ApplyNumberButton(button));
-            HideCellsCmd = new RelayCommand<object>((o) => HideOrUnhideCells());
-            ShowCellsCmd = new RelayCommand<object>((o) => ShowCells());
+            InitCommands();    
         }
 
         private void InitCells()
@@ -74,7 +70,7 @@ namespace Sudoku
             Enumerable.Range(1, 9).ToList().ForEach((i) => _rows.Add(new SubCellsVM()));
             Enumerable.Range(1, 9).ToList().ForEach((i) => _columns.Add(new SubCellsVM()));
 
-            foreach (SubGrid subGrid in _mainGrid.SubGrids)
+            foreach (SubGrid subGrid in _mainGrid.SubGrids3x3)
             {
                 SubGrids.Add(new SubGridVM(subGrid, _selectedNumber));
             }
@@ -95,6 +91,18 @@ namespace Sudoku
                     _columns[colId].Cells.Add(_rows[rowId].Cells[colId]);
                 }
             }
+        }
+
+        private void InitCommands()
+        {
+            ValidateCellsCmd = new RelayCommand<object>((o) => ValidateCells());
+            SaveCmd = new RelayCommand<object>((o) => SaveCells());
+            LoadCmd = new RelayCommand<object>((o) => LoadCells());
+            NumberButtonCmd = new RelayCommand<Button>((button) => ApplyNumberButton(button));
+            ResetSelectedNumberCmd = new RelayCommand<object>((o) => ResetSelectedNumber());
+            HideCellsCmd = new RelayCommand<object>((o) => HideOrUnhideCells());
+            ShowCellsCmd = new RelayCommand<object>((o) => ShowCells());
+            TrySolveOneCellCmd = new RelayCommand<object>((o) => TrySolveOneCell());
         }
 
         private void ValidateCells()
@@ -147,6 +155,13 @@ namespace Sudoku
             OnPropertyChanged((nameof(HideCellsLabel)));
         }
 
+        private void ResetSelectedNumber()
+        {
+            _selectedNumber.Value = 0;
+            OnPropertyChanged(nameof(SelectedNumberLabel));
+            OnPropertyChanged((nameof(HideCellsLabel)));
+        }
+
         private void HideOrUnhideCells()
         {
             ShowCells();
@@ -182,12 +197,27 @@ namespace Sudoku
             IsHindingCells = false;
         }
 
+        private void TrySolveOneCell()
+        {
+            var solver = new Solver(_mainGrid);
+            if (solver.TrySolveOneCell())
+            {
+                RefreshAll();
+            }
+            else
+            {
+                MessageBox.Show("No obvious cell :(");
+            }
+        }
+
+        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+        #endregion
     }
 
     public class SelectedNumber

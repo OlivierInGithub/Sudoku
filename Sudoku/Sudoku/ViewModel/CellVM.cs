@@ -36,7 +36,7 @@ namespace Sudoku
             }
             set
             {
-                _cell.IsValidated = true;
+                _cell.IsValidated = value;
                 OnPropertyChanged(nameof(IsValidated));
             }
         }
@@ -58,6 +58,8 @@ namespace Sudoku
 
         public void Refresh()
         {
+            if (IsValidated && Value == 0)
+                IsValidated = false;
             OnPropertyChanged(nameof(Value));
         }
 

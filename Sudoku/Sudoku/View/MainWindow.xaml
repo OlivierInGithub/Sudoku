@@ -85,10 +85,12 @@
                         <Button Content="8" Style="{StaticResource NumberButton}"/>
                         <Button Content="9" Style="{StaticResource NumberButton}"/>
                     </StackPanel>
+                    <Button Content="Reset" Command="{Binding ResetSelectedNumberCmd}"/>
                 </StackPanel>
             </GroupBox>
             <Button Content="{Binding HideCellsLabel}" Command="{Binding HideCellsCmd}"/>
             <Button Content="Show all cells" Command="{Binding ShowCellsCmd}"/>
+            <Button Content="Try solve one cell" Command="{Binding TrySolveOneCellCmd}"/>
         </StackPanel>
     </Grid>
 </Window>

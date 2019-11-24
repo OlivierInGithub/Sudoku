@@ -60,9 +60,8 @@
     <Compile Include="Converters\CellValueConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Model\Cell.cs" />
-    <Compile Include="Model\Column.cs" />
-    <Compile Include="Model\Row.cs" />
     <Compile Include="Model\SubGrid.cs" />
+    <Compile Include="Solver\Solver.cs" />
     <Compile Include="ViewModel\CellVM.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="Converters\ReverseBooleanConverter.cs" />
