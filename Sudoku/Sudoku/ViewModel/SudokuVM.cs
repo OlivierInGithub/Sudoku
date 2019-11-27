@@ -28,6 +28,7 @@ namespace Sudoku
         public ICommand HideCellsCmd { get; set; }
         public ICommand ShowCellsCmd { get; set; }
         public ICommand TrySolveOneCellCmd { get; set; }
+        public ICommand SolveGridCmd { get; set; }
 
         public string SelectedNumberLabel
         {
@@ -103,6 +104,7 @@ namespace Sudoku
             HideCellsCmd = new RelayCommand<object>((o) => HideOrUnhideCells());
             ShowCellsCmd = new RelayCommand<object>((o) => ShowCells());
             TrySolveOneCellCmd = new RelayCommand<object>((o) => TrySolveOneCell());
+            SolveGridCmd = new RelayCommand<object>((o) => SolveGrid());
         }
 
         private void ValidateCells()
@@ -207,6 +209,19 @@ namespace Sudoku
             else
             {
                 MessageBox.Show("No obvious cell :(");
+            }
+        }
+
+        private void SolveGrid()
+        {
+            var solver = new Solver(_mainGrid);
+            if (solver.TrySolveGrid())
+            {
+                RefreshAll();
+            }
+            else
+            {
+                MessageBox.Show("Can not solve this grid :(");
             }
         }
 

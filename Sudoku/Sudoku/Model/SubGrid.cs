@@ -38,5 +38,15 @@ namespace Sudoku
             }
             return false;
         }
+
+        public void SetValues(short[] values)
+        {
+            if (values.Length != Cells.Count)
+                throw new ArgumentOutOfRangeException("SetValues parameter should contain 9 values");
+            for (int i=0; i < values.Length; i++)
+            {
+                Cells[i].Value = values[i];
+            }
+        }
     }
 }

@@ -91,6 +91,7 @@
             <Button Content="{Binding HideCellsLabel}" Command="{Binding HideCellsCmd}"/>
             <Button Content="Show all cells" Command="{Binding ShowCellsCmd}"/>
             <Button Content="Try solve one cell" Command="{Binding TrySolveOneCellCmd}"/>
+            <Button Content="Solve this grid" Command="{Binding SolveGridCmd}"/>
         </StackPanel>
     </Grid>
 </Window>

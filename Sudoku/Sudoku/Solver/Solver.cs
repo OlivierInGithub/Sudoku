@@ -95,5 +95,15 @@ namespace Sudoku
             }
             return false;
         }
+
+        public bool TrySolveGrid()
+        {
+            while (TrySolveOneCell())
+            {
+                if (_mainGrid.Cells.All((cell) => cell.Value > 0))
+                    return true;
+            }
+            return false;
+        }
     }
 }
