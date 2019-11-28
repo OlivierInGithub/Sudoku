@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Windows;
+using System;
 
 namespace Sudoku
 {
@@ -214,14 +215,21 @@ namespace Sudoku
 
         private void SolveGrid()
         {
-            var solver = new Solver(_mainGrid);
-            if (solver.TrySolveGrid())
+            try
             {
-                RefreshAll();
+                var solver = new Solver(_mainGrid);
+                if (solver.TrySolveGrid())
+                {
+                    RefreshAll();
+                }
+                else
+                {
+                    MessageBox.Show("Can not solve this grid :(");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Can not solve this grid :(");
+                MessageBox.Show(ex.Message);
             }
         }
 

@@ -31,14 +31,32 @@ namespace Sudoku
                 }
             }
 
-            for (int rowId = 0; rowId < 9; rowId++)
+            for (int gridRowId = 0; gridRowId < 3; gridRowId++)
             {
-                for (int colId = 0; colId < 9; colId++)
+                for (int gridColId = 0; gridColId < 3; gridColId++)
                 {
-                    int subGridId = 3*(rowId % 3) + (colId % 3);
-                    SubGrids3x3[subGridId].Cells.Add(Rows[rowId].Cells[colId]);
+                    SubGrids3x3[gridRowId * 3 + gridColId].Cells.AddRange(Rows[gridRowId * 3].Cells.Skip(gridColId * 3).Take(3));
+                    SubGrids3x3[gridRowId * 3 + gridColId].Cells.AddRange(Rows[gridRowId * 3 + 1].Cells.Skip(gridColId * 3).Take(3));
+                    SubGrids3x3[gridRowId * 3 + gridColId].Cells.AddRange(Rows[gridRowId * 3 + 2].Cells.Skip(gridColId * 3).Take(3));
                 }
             }
+        }
+
+        public bool IsComplete()
+        {
+            return Cells.All((cell) => cell.Value > 0);
+        }
+
+        public bool IsValid()
+        {
+            return AreValid(Rows) && 
+                AreValid(Columns) && 
+                AreValid(SubGrids3x3); 
+        }
+
+        private bool AreValid(List<SubGrid> subGrids)
+        {
+            return subGrids.All((sg) => sg.IsValid());
         }
     }
 }

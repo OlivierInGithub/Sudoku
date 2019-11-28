@@ -48,5 +48,28 @@ namespace Sudoku
                 Cells[i].Value = values[i];
             }
         }
+
+        public bool IsValid()
+        {
+            var hasValue = new bool[9];
+            foreach (Cell cell in Cells)
+            {
+                var value = cell.Value;
+                if (value > 0)
+                {
+                    var index = value - 1;
+                    if (hasValue[index])
+                        return false;
+                    else
+                        hasValue[index] = true;
+                }
+            }
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return String.Join(", ",Cells.Select((cell) => cell.ToString()));
+        }
     }
 }

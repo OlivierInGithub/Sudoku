@@ -28,7 +28,9 @@ namespace UnitTest
             var solver = new Solver(grid);
             var result = solver.TrySolveGrid();
 
-            Assert.IsTrue(result);
+            Assert.IsTrue(result, "Solver didn't succeed");
+            Assert.IsTrue(grid.IsComplete(), "Grid is not complete");
+            Assert.IsTrue(grid.IsValid(), "Grid is not valid");
         }
 
         private void FillGrid(FullGrid grid, short[] values)

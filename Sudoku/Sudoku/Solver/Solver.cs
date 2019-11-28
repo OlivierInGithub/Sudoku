@@ -52,12 +52,13 @@ namespace Sudoku
                     return true;
             }
 
+            if (SetToOnlyPossibleCell(_mainGrid.SubGrids3x3, number))
+                return true;
             if (SetToOnlyPossibleCell(_mainGrid.Rows, number))
                 return true;
             if (SetToOnlyPossibleCell(_mainGrid.Columns, number))
                 return true;
-            if (SetToOnlyPossibleCell(_mainGrid.SubGrids3x3, number))
-                return true;
+            
             return false;
         }
 
@@ -98,6 +99,8 @@ namespace Sudoku
 
         public bool TrySolveGrid()
         {
+            if (!_mainGrid.IsValid())
+                throw new Exception("Input grid is not valid!");
             while (TrySolveOneCell())
             {
                 if (_mainGrid.Cells.All((cell) => cell.Value > 0))
