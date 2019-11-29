@@ -31,9 +31,9 @@ namespace Sudoku
 
         public bool SetToOnlyPossibleCell(short number)
         {
-            if (Cells.Count((c) => c.CanHaveValue[number-1]) == 1)
+            if (Cells.Count((c) => c.CanHaveValue(number)) == 1)
             {
-                Cells.First((c) => c.CanHaveValue[number - 1]).Value = number;
+                Cells.First((c) => c.CanHaveValue(number)).Value = number;
                 return true;
             }
             return false;

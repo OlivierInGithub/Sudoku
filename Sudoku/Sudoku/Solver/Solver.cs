@@ -46,6 +46,16 @@ namespace Sudoku
             FlagAllCellsInSubGridsHavingNumber(_mainGrid.Columns, number);
             FlagAllCellsInSubGridsHavingNumber(_mainGrid.SubGrids3x3, number);
 
+            if (TrySetOneCell(number))
+                return true;
+
+            FlagMoreCells(number);
+            
+            return false;
+        }
+
+        private bool TrySetOneCell(short number)
+        {
             foreach (Cell cell in _mainGrid.Cells)
             {
                 if (cell.Value == 0 && cell.SetToOnlyPossibleValue())
@@ -58,7 +68,6 @@ namespace Sudoku
                 return true;
             if (SetToOnlyPossibleCell(_mainGrid.Columns, number))
                 return true;
-            
             return false;
         }
 
@@ -95,6 +104,53 @@ namespace Sudoku
                 }
             }
             return false;
+        }
+
+        private void FlagMoreCells(short number)
+        {
+            for (int subGridRow = 0; subGridRow < 3; subGridRow++)
+            {
+                FlagMoreRowCells(number, _mainGrid.SubGrids3x3[subGridRow * 3], subGridRow, (cellList) => cellList.Skip(3));
+                FlagMoreRowCells(number, _mainGrid.SubGrids3x3[subGridRow * 3 + 1], subGridRow, (cellList) => cellList.Take(3).Concat(cellList.Skip(6)));
+                FlagMoreRowCells(number, _mainGrid.SubGrids3x3[subGridRow * 3 + 2], subGridRow, (cellList) => cellList.Take(6));
+            }
+            //TODO same for colmuns?
+        }
+
+        private void FlagMoreRowCells(short number, SubGrid subGrid, int subGridRow, Func<List<Cell>, IEnumerable<Cell>> selectCells)
+        {
+            if (!subGrid.Cells.Any((cell) => cell.Value == number))
+            {
+                int possibleCellsNb = subGrid.Cells.Count((cell) => cell.CanHaveValue(number));
+                if (possibleCellsNb == 2 || possibleCellsNb == 3)
+                {
+                    var subGridInnerRows = GetInnerRows(subGrid);
+                    for (int subGridInnerRowId = 0; subGridInnerRowId < 3; subGridInnerRowId++)
+                    {
+                        TryFlagCells(subGridInnerRows[subGridInnerRowId], selectCells(_mainGrid.Rows[subGridRow * 3 + subGridInnerRowId].Cells), number, possibleCellsNb);
+                    }
+                }
+            }
+        }
+
+        private List<IEnumerable<Cell>> GetInnerRows(SubGrid subGrid)
+        {
+            return new List<IEnumerable<Cell>> {
+                            subGrid.Cells.Take(3),
+                            subGrid.Cells.Skip(3).Take(3),
+                            subGrid.Cells.Skip(6)
+            };
+        }
+
+        private void TryFlagCells(IEnumerable<Cell> subGridCells, IEnumerable<Cell> rowOtherCells, short number, int possibleCellsNb)
+        {
+            if (subGridCells.Count((cell) => cell.CanHaveValue(number)) == possibleCellsNb)
+            {
+                foreach (Cell cell in rowOtherCells)
+                {
+                    cell.FlagCantHaveNumber(number);
+                }
+            }
         }
 
         public bool TrySolveGrid()

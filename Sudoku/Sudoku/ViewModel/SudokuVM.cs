@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Windows;
 using System;
+using Microsoft.Win32;
 
 namespace Sudoku
 {
@@ -122,8 +123,11 @@ namespace Sudoku
 
         private void SaveCells()
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == false)
+                return;
             var cellValues = _mainGrid.Cells.Select((cell) => cell.Value).ToArray();
-            using (StreamWriter file = File.CreateText(FilePath))
+            using (StreamWriter file = File.CreateText(saveFileDialog.FileName))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(file, cellValues);
@@ -132,7 +136,10 @@ namespace Sudoku
 
         private void LoadCells()
         {
-            var cellValues = JsonConvert.DeserializeObject<short[]>(File.ReadAllText(FilePath));
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == false)
+                return;
+            var cellValues = JsonConvert.DeserializeObject<short[]>(File.ReadAllText(openFileDialog.FileName));
 
             int index = 0;
             foreach (Cell cell in _mainGrid.Cells)

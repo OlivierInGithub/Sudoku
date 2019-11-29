@@ -7,13 +7,13 @@ namespace Sudoku
     {
         public Int16 Value { get; set; }
         public bool IsValidated { get; set; }
-        public bool[] CanHaveValue;
+        private bool[] _canHaveValue;
 
         public Cell()
         {
             Value = 0;
             IsValidated = false;
-            CanHaveValue = new bool[9];
+            _canHaveValue = new bool[9];
             ResetStatus();
         }
 
@@ -21,7 +21,7 @@ namespace Sudoku
         {
             for (int i = 1; i <= 9; i++)
             {
-                CanHaveValue[i - 1] = true;
+                _canHaveValue[i - 1] = true;
             }
         }
 
@@ -30,7 +30,7 @@ namespace Sudoku
             for (int i=1; i<= 9; i++)
             {
                 if (i != number)
-                    CanHaveValue[i - 1] = false;
+                    _canHaveValue[i - 1] = false;
             }
         }
 
@@ -41,7 +41,7 @@ namespace Sudoku
             {
                 for (short i=1; i<=9; i++)
                 {
-                    if (CanHaveValue[i - 1])
+                    if (_canHaveValue[i - 1])
                     {
                         Value = i;
                         return true;
@@ -53,12 +53,17 @@ namespace Sudoku
 
         private bool CanHaveOnlyOneValue()
         {
-            return CanHaveValue.Count((b) => b == true) == 1;
+            return _canHaveValue.Count((b) => b == true) == 1;
         }
 
         public void FlagCantHaveNumber(short number)
         {
-            CanHaveValue[number - 1] = false;
+            _canHaveValue[number - 1] = false;
+        }
+
+        public bool CanHaveValue(short number)
+        {
+            return _canHaveValue[number - 1];
         }
 
         public override string ToString()
