@@ -44,6 +44,9 @@ namespace Sudoku.Solver
         /// <returns>true if a cell is found</returns>
         private bool TrySolveOneCell(short number)
         {
+            if (!_mainGrid.IsValid())
+                throw new Exception("Input grid is not valid!");
+
             FlagAllCellsHavingValue();
             FlagAllCellsInSubGridsHavingNumber(_mainGrid.Rows, number);
             FlagAllCellsInSubGridsHavingNumber(_mainGrid.Columns, number);
@@ -52,33 +55,6 @@ namespace Sudoku.Solver
             if (TrySetOneCell(number))
                 return true;
             
-            return false;
-        }
-
-        private bool TryHarderSolveOneCell(short number)
-        {
-            FlagMoreCells(number);
-
-            if (TrySetOneCell(number))
-                return true;
-
-            return false;
-        }
-
-        private bool TrySetOneCell(short number)
-        {
-            foreach (Cell cell in _mainGrid.Cells)
-            {
-                if (cell.Value == 0 && cell.SetToOnlyPossibleValue())
-                    return true;
-            }
-
-            if (SetToOnlyPossibleCell(_mainGrid.SubGrids3x3, number))
-                return true;
-            if (SetToOnlyPossibleCell(_mainGrid.Rows, number))
-                return true;
-            if (SetToOnlyPossibleCell(_mainGrid.Columns, number))
-                return true;
             return false;
         }
 
@@ -104,6 +80,23 @@ namespace Sudoku.Solver
             }
         }
 
+        private bool TrySetOneCell(short number)
+        {
+            foreach (Cell cell in _mainGrid.Cells)
+            {
+                if (cell.Value == 0 && cell.SetToOnlyPossibleValue())
+                    return true;
+            }
+
+            if (SetToOnlyPossibleCell(_mainGrid.SubGrids3x3, number))
+                return true;
+            if (SetToOnlyPossibleCell(_mainGrid.Rows, number))
+                return true;
+            if (SetToOnlyPossibleCell(_mainGrid.Columns, number))
+                return true;
+            return false;
+        }
+
         private bool SetToOnlyPossibleCell(List<SubGrid> subGrids, short number)
         {
             foreach (SubGrid subGrid in subGrids)
@@ -114,6 +107,16 @@ namespace Sudoku.Solver
                         return true;
                 }
             }
+            return false;
+        }
+
+        private bool TryHarderSolveOneCell(short number)
+        {
+            FlagMoreCells(number);
+
+            if (TrySetOneCell(number))
+                return true;
+
             return false;
         }
 
@@ -206,8 +209,6 @@ namespace Sudoku.Solver
 
         public bool TrySolveGrid()
         {
-            if (!_mainGrid.IsValid())
-                throw new Exception("Input grid is not valid!");
             while (TrySolveOneCell())
             {
                 if (_mainGrid.Cells.All((cell) => cell.Value > 0))
