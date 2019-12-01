@@ -61,6 +61,7 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Model\Cell.cs" />
     <Compile Include="Model\SubGrid.cs" />
+    <Compile Include="Solver\InnerRowOrCol.cs" />
     <Compile Include="Solver\Solver.cs" />
     <Compile Include="ViewModel\CellVM.cs" />
     <Compile Include="Utils\RelayCommand.cs" />

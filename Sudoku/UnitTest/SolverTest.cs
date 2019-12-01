@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sudoku;
+using Sudoku.Solver;
 
 namespace UnitTest
 {

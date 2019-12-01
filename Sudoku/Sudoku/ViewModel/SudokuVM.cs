@@ -209,7 +209,7 @@ namespace Sudoku
 
         private void TrySolveOneCell()
         {
-            var solver = new Solver(_mainGrid);
+            var solver = new Solver.Solver(_mainGrid);
             if (solver.TrySolveOneCell())
             {
                 RefreshAll();
@@ -224,7 +224,7 @@ namespace Sudoku
         {
             try
             {
-                var solver = new Solver(_mainGrid);
+                var solver = new Solver.Solver(_mainGrid);
                 if (solver.TrySolveGrid())
                 {
                     RefreshAll();

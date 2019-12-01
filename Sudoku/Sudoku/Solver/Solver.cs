@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sudoku
+namespace Sudoku.Solver
 {
     public class Solver
     {
@@ -21,6 +19,11 @@ namespace Sudoku
             for (short i=1; i<=9;i++)
             {
                 if (TrySolveOneCell(i))
+                    return true;
+            }
+            for (short i = 1; i <= 9; i++)
+            {
+                if (TryHarderSolveOneCell(i))
                     return true;
             }
             return false;
@@ -48,9 +51,17 @@ namespace Sudoku
 
             if (TrySetOneCell(number))
                 return true;
-
-            FlagMoreCells(number);
             
+            return false;
+        }
+
+        private bool TryHarderSolveOneCell(short number)
+        {
+            FlagMoreCells(number);
+
+            if (TrySetOneCell(number))
+                return true;
+
             return false;
         }
 
@@ -106,40 +117,80 @@ namespace Sudoku
             return false;
         }
 
+        private List<InnerRow> _innerRows;
+        private List<InnerCol> _innerCols;
+
         private void FlagMoreCells(short number)
         {
-            for (int subGridRow = 0; subGridRow < 3; subGridRow++)
+            FillInnerRows();
+            FillInnerCols();
+            for (int subGridId = 0; subGridId < 9; subGridId++)
             {
-                FlagMoreRowCells(number, _mainGrid.SubGrids3x3[subGridRow * 3], subGridRow, (cellList) => cellList.Skip(3));
-                FlagMoreRowCells(number, _mainGrid.SubGrids3x3[subGridRow * 3 + 1], subGridRow, (cellList) => cellList.Take(3).Concat(cellList.Skip(6)));
-                FlagMoreRowCells(number, _mainGrid.SubGrids3x3[subGridRow * 3 + 2], subGridRow, (cellList) => cellList.Take(6));
-            }
-            //TODO same for colmuns?
-        }
-
-        private void FlagMoreRowCells(short number, SubGrid subGrid, int subGridRow, Func<List<Cell>, IEnumerable<Cell>> selectCells)
-        {
-            if (!subGrid.Cells.Any((cell) => cell.Value == number))
-            {
-                int possibleCellsNb = subGrid.Cells.Count((cell) => cell.CanHaveValue(number));
-                if (possibleCellsNb == 2 || possibleCellsNb == 3)
+                var subGrid = _mainGrid.SubGrids3x3[subGridId];
+                if (!subGrid.Cells.Any((cell) => cell.Value == number))
                 {
-                    var subGridInnerRows = GetInnerRows(subGrid);
-                    for (int subGridInnerRowId = 0; subGridInnerRowId < 3; subGridInnerRowId++)
-                    {
-                        TryFlagCells(subGridInnerRows[subGridInnerRowId], selectCells(_mainGrid.Rows[subGridRow * 3 + subGridInnerRowId].Cells), number, possibleCellsNb);
-                    }
+                    TryFlagInnerRows(subGridId, number);
+                    TryFlagInnerCols(subGridId, number);
                 }
             }
         }
 
-        private List<IEnumerable<Cell>> GetInnerRows(SubGrid subGrid)
+        private void FillInnerRows()
         {
-            return new List<IEnumerable<Cell>> {
-                            subGrid.Cells.Take(3),
-                            subGrid.Cells.Skip(3).Take(3),
-                            subGrid.Cells.Skip(6)
-            };
+            _innerRows = new List<InnerRow>();
+            for (int rowId = 0; rowId < 9; rowId++)
+            {
+                var row = _mainGrid.Rows[rowId];
+                _innerRows.Add(new InnerRow(row.Cells.Take(3), rowId / 3, rowId));
+                _innerRows.Add(new InnerRow(row.Cells.Skip(3).Take(3), rowId / 3 + 1, rowId));
+                _innerRows.Add(new InnerRow(row.Cells.Skip(6), rowId / 3 + 2, rowId));
+            }
+        }
+
+        private void FillInnerCols()
+        {
+            _innerCols = new List<InnerCol>();
+            for (int colId = 0; colId < 9; colId++)
+            {
+                var col = _mainGrid.Columns[colId];
+                _innerCols.Add(new InnerCol(col.Cells.Take(3), colId / 3, colId));
+                _innerCols.Add(new InnerCol(col.Cells.Skip(3).Take(3), colId / 3 + 3, colId));
+                _innerCols.Add(new InnerCol(col.Cells.Skip(6), colId / 3 + 6, colId));
+            }
+        }
+
+        private void TryFlagInnerRows(int subGridId, short number)
+        {
+            var subGridInnerRows = _innerRows.Where((innerRow) => innerRow.IsInSubGrid(subGridId));
+            var innerRowsThatCanHaveValue = subGridInnerRows.Where((innerRow) => innerRow.CanHaveValue(number));
+            if (innerRowsThatCanHaveValue.Count() == 1)
+            {
+                var innerRowWithValue = innerRowsThatCanHaveValue.First();
+                var innerRowsInSameRow = _innerRows.Where((row) =>
+                    row.IsInSameRow(innerRowWithValue) &&
+                    !row.IsInSameSubGrid(innerRowWithValue));
+                foreach (InnerRow row in innerRowsInSameRow)
+                {
+                    row.FlagCantHaveNumber(number);
+                }
+            }
+        }
+
+        private void TryFlagInnerCols(int subGridId, short number)
+        {
+            var subGridInnerCols = _innerCols.Where((innerCol) => innerCol.IsInSubGrid(subGridId));
+            var innerColsThatCanHaveValue = subGridInnerCols.Where((innerCol) => innerCol.CanHaveValue(number));
+            if (innerColsThatCanHaveValue.Count() == 1)
+            {
+                var innerColWithValue = innerColsThatCanHaveValue.First();
+                var innerColsInSameCol = _innerCols.Where((col) =>
+                    col.IsInSameCol(innerColWithValue) &&
+                    !col.IsInSameSubGrid(innerColWithValue));
+                foreach (InnerCol col in innerColsInSameCol)
+                {
+                    col.FlagCantHaveNumber(number);
+                }
+            }
         }
 
         private void TryFlagCells(IEnumerable<Cell> subGridCells, IEnumerable<Cell> rowOtherCells, short number, int possibleCellsNb)
