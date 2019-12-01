@@ -37,6 +37,17 @@ namespace Sudoku
             get { return $"Selected number: {_selectedNumber.Value}"; }
         }
 
+        public short SelectedNumber
+        {
+            get { return _selectedNumber.Value; }
+            private set
+            {
+                _selectedNumber.Value = value;
+                OnPropertyChanged(nameof(SelectedNumber));
+                OnPropertyChanged(nameof(SelectedNumberLabel));
+            }
+        }
+
         bool _isHidingCells;
         public bool IsHindingCells
         {
@@ -160,14 +171,13 @@ namespace Sudoku
 
         private void ApplyNumberButton(Button button)
         {
-            _selectedNumber.Value = short.Parse(button.Content.ToString());
-            OnPropertyChanged(nameof(SelectedNumberLabel));
+            SelectedNumber = short.Parse(button.Content.ToString());
             OnPropertyChanged((nameof(HideCellsLabel)));
         }
 
         private void ResetSelectedNumber()
         {
-            _selectedNumber.Value = 0;
+            SelectedNumber = 0;
             OnPropertyChanged(nameof(SelectedNumberLabel));
             OnPropertyChanged((nameof(HideCellsLabel)));
         }

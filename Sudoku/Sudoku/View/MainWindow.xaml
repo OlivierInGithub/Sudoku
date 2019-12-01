@@ -7,6 +7,20 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:SudokuVM}"
         Title="Sudoku" Height="350" Width="525">
+    <Window.Resources>
+        <ResourceDictionary>
+            <TextBlock x:Key="Cursor1" Cursor="Cursors/Cursor1.cur"/>
+            <TextBlock x:Key="Cursor2" Cursor="Cursors/Cursor2.cur"/>
+            <TextBlock x:Key="Cursor3" Cursor="Cursors/Cursor3.cur"/>
+            <TextBlock x:Key="Cursor4" Cursor="Cursors/Cursor4.cur"/>
+            <TextBlock x:Key="Cursor5" Cursor="Cursors/Cursor5.cur"/>
+            <TextBlock x:Key="Cursor6" Cursor="Cursors/Cursor6.cur"/>
+            <TextBlock x:Key="Cursor7" Cursor="Cursors/Cursor7.cur"/>
+            <TextBlock x:Key="Cursor8" Cursor="Cursors/Cursor8.cur"/>
+            <TextBlock x:Key="Cursor9" Cursor="Cursors/Cursor9.cur"/>
+            <TextBlock x:Key="CursorReset" Cursor="Cursors/CursorReset.cur"/>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Grid.Resources>
             <local:ReverseBooleanConverter x:Key="ReverseBooleanConverter"/>
@@ -18,7 +32,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="3">
+        <Border x:Name="SudokuCells" BorderBrush="Black" BorderThickness="3">
             <ItemsControl ItemsSource="{Binding Path=SubGrids}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

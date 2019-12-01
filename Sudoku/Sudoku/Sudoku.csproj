@@ -109,6 +109,21 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="View\Cursors\Cursor1.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Cursors\Cursor2.cur" />
+    <Resource Include="View\Cursors\Cursor3.cur" />
+    <Resource Include="View\Cursors\Cursor4.cur" />
+    <Resource Include="View\Cursors\Cursor5.cur" />
+    <Resource Include="View\Cursors\Cursor6.cur" />
+    <Resource Include="View\Cursors\Cursor7.cur" />
+    <Resource Include="View\Cursors\Cursor8.cur" />
+    <Resource Include="View\Cursors\Cursor9.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="View\Cursors\CursorReset.cur" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
