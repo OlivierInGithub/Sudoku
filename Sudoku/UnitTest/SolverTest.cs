@@ -66,5 +66,30 @@ namespace UnitTest
             Assert.IsTrue(grid.IsComplete(), "Grid is not complete");
             Assert.IsTrue(grid.IsValid(), "Grid is not valid");
         }
+
+        [TestMethod]
+        public void SolverCanSolveHardGrid()
+        {
+            var grid = new FullGrid();
+            short[] values = {
+                1, 0, 0, 0, 0, 7, 0, 9, 0,
+                0, 3, 0, 0, 2, 0, 0, 0, 8,
+                0, 0, 9, 6, 0, 0, 5, 0, 0,
+                0, 0, 5, 3, 0, 0, 9, 0, 0,
+                0, 1, 0, 0, 8, 0, 0, 0, 2,
+                6, 0, 0, 0, 0, 4, 0, 0, 0,
+                3, 0, 0, 0, 0, 0, 0, 1, 0,
+                0, 4, 0, 0, 0, 0, 0, 0, 7,
+                0, 0, 7, 0, 0, 0, 3, 0, 0
+            };
+            FillGrid(grid, values);
+
+            var solver = new Solver(grid);
+            var result = solver.TrySolveGrid();
+
+            Assert.IsTrue(result, "Solver didn't succeed");
+            Assert.IsTrue(grid.IsComplete(), "Grid is not complete");
+            Assert.IsTrue(grid.IsValid(), "Grid is not valid");
+        }
     }
 }

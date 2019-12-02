@@ -207,6 +207,16 @@ namespace Sudoku.Solver
             }
         }
 
+        private bool TryEvenHarderSolveOneCell(short number)
+        {
+            FlagMoreCells(number);
+
+            if (TrySetOneCell(number))
+                return true;
+
+            return false;
+        }
+
         public bool TrySolveGrid()
         {
             while (TrySolveOneCell())
@@ -214,7 +224,63 @@ namespace Sudoku.Solver
                 if (_mainGrid.Cells.All((cell) => cell.Value > 0))
                     return true;
             }
+            if (TrySolveGridWithAssumptions())
+                return true;
             return false;
+        }
+
+        private bool TrySolveGridWithAssumptions()
+        {
+            var numberOfPossibleCells = 2;
+            short number = 1;
+            SubGrid subGridWithNumberOfPossibleCells = null;
+            while (numberOfPossibleCells <= 9)
+            {
+                while (number <= 9)
+                {
+                    subGridWithNumberOfPossibleCells = GetSubGridWithNumberOfPossibleCells(_mainGrid.SubGrids3x3, numberOfPossibleCells, number);
+                    if (subGridWithNumberOfPossibleCells != null)
+                        break;
+                    subGridWithNumberOfPossibleCells = GetSubGridWithNumberOfPossibleCells(_mainGrid.Rows, numberOfPossibleCells, number);
+                    if (subGridWithNumberOfPossibleCells != null)
+                        break;
+                    subGridWithNumberOfPossibleCells = GetSubGridWithNumberOfPossibleCells(_mainGrid.Columns, numberOfPossibleCells, number);
+                    if (subGridWithNumberOfPossibleCells != null)
+                        break;
+                    number++;
+                }
+                if (subGridWithNumberOfPossibleCells != null)
+                    break;
+                numberOfPossibleCells++;
+            }
+            foreach(Cell cell in subGridWithNumberOfPossibleCells.Cells.Where((cell) => cell.CanHaveValue(number)))
+            {
+                cell.Value = number;
+                var fullGrid = new FullGrid();
+                fullGrid.CopyValues(_mainGrid);
+                cell.Value = 0;
+                var solver = new Solver(fullGrid);
+                try
+                {
+                    if (solver.TrySolveGrid())
+                    {
+                        _mainGrid.CopyValues(fullGrid);
+                        return true;
+                    }
+                }
+                catch
+                {
+                    //All but one of the assumptions should lead to invalid grid and raise an exception
+                }
+            }
+            return false;
+        }
+
+        private SubGrid GetSubGridWithNumberOfPossibleCells(List<SubGrid> subGrids, int numberOfPossibleCells, short number)
+        {
+            return subGrids.
+                Where((subGrid) => !subGrid.HasNumber(number)).
+                FirstOrDefault((subGrid) => subGrid.Cells.Count((cell) => cell.CanHaveValue(number)) == numberOfPossibleCells);
         }
     }
 }

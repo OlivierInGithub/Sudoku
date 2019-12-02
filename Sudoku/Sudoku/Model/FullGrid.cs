@@ -58,5 +58,13 @@ namespace Sudoku
         {
             return subGrids.All((sg) => sg.IsValid());
         }
+
+        public void CopyValues(FullGrid other)
+        {
+            for (int cellNb = 0; cellNb < Cells.Count(); cellNb++)
+            {
+                Cells[cellNb].Value = other.Cells[cellNb].Value;
+            }
+        }
     }
 }
